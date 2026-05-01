@@ -80,7 +80,6 @@
         mix-blend-mode: overlay;
       }
 
-
       /* Soft fade from header into page */
       .header-fade {
         height: 120px;
@@ -88,7 +87,31 @@
         margin-top: -60px;
       }
 
-</style>
+      /* Styling for the QR code container */
+      #qrCodeContainer {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      #qrCodeContainer img {
+        max-width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+      }
+
+      button {
+        margin-top: 10px;
+      }
+    </style>
   </head>
 
   <body>
@@ -98,8 +121,7 @@
         <h1 class="w3-xxxlarge"><b>CSC 353 Final</b></h1>
         <span class="w3-large">Subtitle</span>
         <nav class="w3-margin-top">
-          <a href="manifesto.html" class="w3-button w3-indigo w3-large">Button 1</a>
-          <a href="hci.html" class="w3-button w3-indigo w3-large">Button 2</a>
+          <a href="ViewCodes.html" class="w3-button w3-indigo w3-large">View QR Codes</a>
           <a href="dataviz.html" class="w3-button w3-indigo w3-large">Button 3</a>
         </nav>
       </div>
@@ -110,9 +132,37 @@
 
     <!-- About Section -->
     <section id="about-section" class="w3-container">
-      <p class="w3-xlarge">
-        Body
-      </p>
+      <h2>Submit Share Link to Google Form</h2>
+      <textarea id="formUrlInput" placeholder="Paste your Google Form share link here"></textarea>
+      <button class="w3-button w3-indigo w3-large" onclick="generateQRCode()">Create a new QR Code</button>
+      <div id="qrCodeContainer"></div>
     </section>
+
+    <script>
+      function generateQRCode() {
+        const formUrl = document.getElementById('formUrlInput').value.trim();
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+
+        // Clear previous QR code
+        qrCodeContainer.innerHTML = '';
+
+        // Validate the input
+        if (!formUrl) {
+          qrCodeContainer.innerHTML = '<p style="color: red;">Please paste a Google Form share link.</p>';
+          return;
+        }
+
+        // Generate the QR code URL
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(formUrl)}`;
+
+        // Create an image element for the QR code
+        const qrCodeImg = document.createElement('img');
+        qrCodeImg.src = qrCodeUrl;
+        qrCodeImg.alt = 'QR Code for Google Form';
+
+        // Append the QR code to the container
+        qrCodeContainer.appendChild(qrCodeImg);
+      }
+    </script>
   </body>
 </html>
