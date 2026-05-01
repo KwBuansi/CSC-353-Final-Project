@@ -89,3 +89,41 @@ CREATE TABLE grades (
     FOREIGN KEY (student_id)    REFERENCES students(id),
     FOREIGN KEY (assignment_id) REFERENCES assignments(id)
 );
+-- Useful view to see all grade information
+CREATE VIEW grade_detail AS
+SELECT
+    g.id            AS grade_id,
+    g.grade_percent,
+    s.id            AS student_id,
+    s.name          AS student_name,
+    s.class_year,
+    s.major,
+    s.is_major,
+    a.id            AS assignment_id,
+    a.name          AS assignment_name,
+    a.type          AS assignment_type,
+    c.id            AS course_id,
+    c.code          AS course_code,
+    c.name          AS course_name,
+    sem.season,
+    sem.year
+FROM grades g
+JOIN students       s   ON g.student_id    = s.id
+JOIN assignments    a   ON g.assignment_id = a.id
+JOIN course_sections cs ON a.course_section_id = cs.id
+JOIN courses        c   ON cs.course_id    = c.id
+JOIN semesters      sem ON cs.semester_id  = sem.id;
+
+-- View to look at assignment averages from specific years for grade inflation tracking 
+CREATE VIEW assignment_averages AS
+SELECT
+    course_code,
+    course_name,
+    assignment_name,
+    assignment_type,
+    season,
+    year,
+    ROUND(AVG(grade_percent), 2) AS avg_grade,
+    COUNT(*)                     AS num_grades
+FROM grade_detail
+GROUP BY course_code, course_name, assignment_name, assignment_type, season, year;
