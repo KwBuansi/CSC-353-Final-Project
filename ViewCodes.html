@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View QR Codes</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Raleway", sans-serif;
+      }
+
+      body {
+        background: #f5f7fa;
+        color: #333;
+      }
+
+      header .overlay-content {
+        color: white;
+        text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      nav a {
+        margin: 0 5px;
+        border-radius: 6px;
+      }
+
+      /* QR Codes Section Styling */
+      #qr-codes-section {
+        background: white;
+        padding: 50px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        margin: 40px auto;
+      }
+
+      #qr-codes-section h2 {
+        border-left: 8px solid #3f51b5;
+        padding-left: 15px;
+      }
+
+      /* Tech-themed header */
+      .tech-header {
+        height: 420px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tech-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0c2346;
+        background-size: 300% 300%;
+      }
+
+      /* Subtle floating circuitry pattern */
+      .tech-bg::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.18;
+        mix-blend-mode: overlay;
+      }
+
+      /* Soft fade from header into page */
+      .header-fade {
+        height: 120px;
+        background: linear-gradient(to bottom, rgba(0,0,0,0), #f5f7fa);
+        margin-top: -60px;
+      }
+
+      /* QR Code item styling */
+      .qr-item {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .qr-item h3 {
+        margin-top: 0;
+        color: #3f51b5;
+      }
+
+      .qr-item img {
+        max-width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .qr-item a {
+        display: inline-block;
+        margin-top: 10px;
+        color: #3f51b5;
+        text-decoration: none;
+      }
+
+      .qr-item a:hover {
+        text-decoration: underline;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 20px;
+        color: #3f51b5;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="tech-header w3-display-container" id="home">
+      <div class="tech-bg"></div>
+      <div class="w3-display-middle w3-center overlay-content">
+        <h1 class="w3-xxxlarge"><b>View QR Codes</b></h1>
+        <span class="w3-large">Your Generated QR Codes</span>
+        <nav class="w3-margin-top">
+          <a href="index.html" class="w3-button w3-indigo w3-large">Back to Home</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Gradient Fade Into Page -->
+    <div class="header-fade"></div>
+
+    <!-- QR Codes Section -->
+    <section id="qr-codes-section" class="w3-container">
+      <h2>Your QR Codes</h2>
+      <div id="qrCodesList"></div>
+    </section>
+
+    <script>
+      // Retrieve stored QR codes from localStorage
+      const storedQRCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+
+      // Display QR codes
+      const qrCodesList = document.getElementById('qrCodesList');
+      qrCodesList.innerHTML = '';
+
+      if (storedQRCodes.length === 0) {
+        qrCodesList.innerHTML = '<p>No QR codes generated yet. <a href="index.html">Create one now!</a></p>';
+      } else {
+        storedQRCodes.forEach((qrCode, index) => {
+          const qrItem = document.createElement('div');
+          qrItem.className = 'qr-item';
+          qrItem.innerHTML = `
+            <h3>${qrCode.title}</h3>
+            <p>Google Form URL: <a href="${qrCode.url}" target="_blank">${qrCode.url}</a></p>
+            <img src="${qrCode.qrCodeUrl}" alt="QR Code for ${qrCode.title}" />
+          `;
+          qrCodesList.appendChild(qrItem);
+        });
+      }
+    </script>
+  </body>
+</html>

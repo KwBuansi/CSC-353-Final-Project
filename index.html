@@ -37,8 +37,8 @@
         border-radius: 6px;
       }
 
-      /* About Section Styling */
-      #about-section {
+      /* QR Code Section Styling */
+      #qr-code-section {
         background: white;
         padding: 50px;
         border-radius: 12px;
@@ -47,10 +47,21 @@
         margin: 40px auto;
       }
 
-      #about-section h2 {
+      /* Tutorial Section Styling */
+      #tutorial-section {
+        background: white;
+        padding: 50px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        margin: 40px auto;
+      }
+
+      #qr-code-section h2 {
         border-left: 8px solid #3f51b5;
         padding-left: 15px;
       }
+
       /* Tech-themed header */
       .tech-header {
         height: 420px;
@@ -99,9 +110,9 @@
         border-radius: 4px;
       }
 
-      textarea {
+      textarea,
+      input {
         width: 100%;
-        height: 60px;
         padding: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;
@@ -110,6 +121,10 @@
 
       button {
         margin-top: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
       }
     </style>
   </head>
@@ -121,34 +136,61 @@
         <h1 class="w3-xxxlarge"><b>CSC 353 Final</b></h1>
         <span class="w3-large">Subtitle</span>
         <nav class="w3-margin-top">
+          <a href="ViewGrades.html" class="w3-button w3-indigo w3-large">View Grades</a>
           <a href="ViewCodes.html" class="w3-button w3-indigo w3-large">View QR Codes</a>
-          <a href="dataviz.html" class="w3-button w3-indigo w3-large">Button 3</a>
         </nav>
       </div>
     </header>
 
-    <!-- Gradient Fade Into Page -->
-    <div class="header-fade"></div>
-
-    <!-- About Section -->
-    <section id="about-section" class="w3-container">
+    <!-- QR Code Section -->
+    <section id="qr-code-section" class="w3-container">
       <h2>Submit Share Link to Google Form</h2>
-      <textarea id="formUrlInput" placeholder="Paste your Google Form share link here"></textarea>
+      <div class="form-group">
+        <input type="text" id="qrTitleInput" placeholder="Enter a title for this QR code" />
+      </div>
+      <div class="form-group">
+        <textarea id="formUrlInput" placeholder="Paste your Google Form share link here"></textarea>
+      </div>
       <button class="w3-button w3-indigo w3-large" onclick="generateQRCode()">Create a new QR Code</button>
       <div id="qrCodeContainer"></div>
+    </section>
+
+    <!-- Tutorial Section -->
+    <section id="tutorial-section" class="w3-container">
+      <h2>Tutorial</h2>
+      <ol>
+        <li>
+          Create a Google Form and paste the share link in the above box. Make sure to ask students to input their student IDs in the form.
+        </li>
+        <li>
+          Enter a title for the QR code (e.g., "Quiz 1").
+        </li>
+        <li>
+          Click "Create a new QR Code" to generate a code for the class.
+        </li>
+        <li>
+          Click "View Grades" to see yearly grade distribution.
+        </li>
+      </ol>
     </section>
 
     <script>
       function generateQRCode() {
         const formUrl = document.getElementById('formUrlInput').value.trim();
+        const qrTitle = document.getElementById('qrTitleInput').value.trim();
         const qrCodeContainer = document.getElementById('qrCodeContainer');
 
         // Clear previous QR code
         qrCodeContainer.innerHTML = '';
 
-        // Validate the input
+        // Validate inputs
         if (!formUrl) {
           qrCodeContainer.innerHTML = '<p style="color: red;">Please paste a Google Form share link.</p>';
+          return;
+        }
+
+        if (!qrTitle) {
+          qrCodeContainer.innerHTML = '<p style="color: red;">Please enter a title for this QR code.</p>';
           return;
         }
 
@@ -160,8 +202,24 @@
         qrCodeImg.src = qrCodeUrl;
         qrCodeImg.alt = 'QR Code for Google Form';
 
-        // Append the QR code to the container
-        qrCodeContainer.appendChild(qrCodeImg);
+        // Retrieve existing QR codes from localStorage
+        const storedQRCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+
+        // Add the new QR code to the array
+        storedQRCodes.push({
+          title: qrTitle,
+          url: formUrl,
+          qrCodeUrl: qrCodeUrl,
+        });
+
+        // Save the updated array back to localStorage
+        localStorage.setItem('qrCodes', JSON.stringify(storedQRCodes));
+
+        // Display success message
+        qrCodeContainer.innerHTML = `
+          <p style="color: green;">QR code generated successfully!</p>
+          ${qrCodeImg.outerHTML}
+        `;
       }
     </script>
   </body>
