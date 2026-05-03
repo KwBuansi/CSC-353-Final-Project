@@ -167,9 +167,17 @@
         storedQRCodes.forEach((qrCode, index) => {
           const qrItem = document.createElement('div');
           qrItem.className = 'qr-item';
+          const sheetLine =
+            qrCode.spreadsheetId != null
+              ? `<p>Responses sheet: <a href="https://docs.google.com/spreadsheets/d/${encodeURIComponent(
+                  qrCode.spreadsheetId
+                )}/edit" target="_blank" rel="noopener">Open in Google Sheets</a></p>`
+              : '';
           qrItem.innerHTML = `
             <h3>${qrCode.title}</h3>
+            <h3>${qrCode.semesterYear}</h3>
             <p>Google Form URL: <a href="${qrCode.url}" target="_blank">${qrCode.url}</a></p>
+            ${sheetLine}
             <img src="${qrCode.qrCodeUrl}" alt="QR Code for ${qrCode.title}" />
           `;
           qrCodesList.appendChild(qrItem);

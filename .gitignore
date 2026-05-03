@@ -1,0 +1,9 @@
+# Local secrets — never commit
+js/config.local.js
+js/.env
+.env
+.env.local
+.env.*.local
+
+# Google Cloud service account keys (push blocked by GitHub if tracked)
+api/*.json

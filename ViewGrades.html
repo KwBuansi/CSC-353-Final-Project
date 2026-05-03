@@ -87,53 +87,6 @@
         margin-top: -60px;
       }
 
-      /* Grade table styling */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-      }
-
-      th {
-        background-color: #3f51b5;
-        color: white;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      .grade-cell {
-        font-weight: bold;
-      }
-
-      .grade-A {
-        color: green;
-      }
-
-      .grade-B {
-        color: blue;
-      }
-
-      .grade-C {
-        color: orange;
-      }
-
-      .grade-D {
-        color: red;
-      }
-
-      .grade-F {
-        color: darkred;
-      }
-
       a {
         display: inline-block;
         margin-top: 20px;
@@ -156,6 +109,82 @@
         text-align: center;
         margin-top: 20px;
       }
+
+      .heatmap-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+        table-layout: fixed;
+      }
+
+      .heatmap-table th,
+      .heatmap-table td {
+        border: 1px solid #ddd;
+        padding: 10px 6px;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      .heatmap-table th {
+        background-color: #2c387e;
+        color: white;
+      }
+
+      .heatmap-table th.row-head {
+        background-color: #3f51b5;
+        text-align: left;
+        width: 22%;
+      }
+
+      .heatmap-cell {
+        color: #1a1a1a;
+        font-weight: 600;
+        transition: outline 0.15s ease;
+      }
+
+      .heatmap-cell:hover {
+        outline: 2px solid #3f51b5;
+        z-index: 1;
+      }
+
+      .heatmap-legend {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        max-width: 360px;
+        margin-top: 16px;
+        font-size: 0.85rem;
+        color: #444;
+      }
+
+      .heatmap-legend-bar {
+        height: 14px;
+        width: 100%;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
+      .heatmap-legend-ticks {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      #configHint {
+        background: #e8eaf6;
+        border-left: 4px solid #3f51b5;
+        padding: 12px 16px;
+        margin-top: 12px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+      }
+
+      .sheet-note {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 8px;
+      }
     </style>
   </head>
 
@@ -176,115 +205,18 @@
 
     <!-- Grades Section -->
     <section id="grades-section" class="w3-container">
-      <h2>Class Grades</h2>
-      <div id="loading">Loading grades...</div>
+      <h2>Grade heatmap</h2>
+      <p class="sheet-note">
+        Rows are student IDs, and columns are quiz names. Each cell represents one students grade on the corresponding assignment. If a student is yet to take a quiz, their cell will be gray.
+      </p>
+      <div id="loading">Loading spreadsheet data…</div>
       <div id="error"></div>
-      <div id="gradesTable"></div>
+      <div id="configHint" hidden></div>
+      <div id="heatmapWrap"></div>
     </section>
 
-    <script>
-      // Replace with your Google Sheet ID and API key
-      const sheetId = 'YOUR_GOOGLE_SHEET_ID'; // e.g., '1aBcD...'
-      const apiKey = 'YOUR_API_KEY'; // Replace with your API key
-      const range = 'Sheet1!A:D'; // Adjust based on your sheet structure
-
-      async function fetchGrades() {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-          return data.values;
-        } catch (error) {
-          console.error("Error fetching grades:", error);
-          return null;
-        }
-      }
-
-      function processGrades(data) {
-        const grades = {};
-        const quizzes = [];
-
-        // Extract quiz names from the first row (assuming the first row is headers)
-        for (let i = 3; i < data.length; i++) {
-          quizzes.push(data[i]);
-        }
-
-        // Process each row
-        for (let i = 1; i < data.length; i++) {
-          const row = data[i];
-          const studentId = row; // Student ID is in the third column
-          grades[studentId] = {};
-
-          // Assign grades for each quiz
-          for (let j = 0; j < quizzes.length; j++) {
-            const quizName = quizzes[j];
-            const score = parseInt(row[j + 3].split(' / ')); // Extract numeric score
-            grades[studentId][quizName] = score;
-          }
-        }
-
-        return { grades, quizzes };
-      }
-
-      function displayGrades(grades, quizzes) {
-        const gradesTable = document.getElementById('gradesTable');
-        gradesTable.innerHTML = '';
-
-        // Create table header
-        const table = document.createElement('table');
-        const headerRow = document.createElement('tr');
-        headerRow.innerHTML = '<th>Student ID</th>';
-        quizzes.forEach(quiz => {
-          const th = document.createElement('th');
-          th.textContent = quiz;
-          headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
-
-        // Create table rows for each student
-        Object.keys(grades).forEach(studentId => {
-          const row = document.createElement('tr');
-          const studentIdCell = document.createElement('td');
-          studentIdCell.textContent = studentId;
-          row.appendChild(studentIdCell);
-
-          quizzes.forEach(quiz => {
-            const score = grades[studentId][quiz];
-            const gradeCell = document.createElement('td');
-            gradeCell.textContent = score;
-            gradeCell.className = `grade-cell grade-${getGradeLetter(score)}`;
-            row.appendChild(gradeCell);
-          });
-
-          table.appendChild(row);
-        });
-
-        gradesTable.appendChild(table);
-      }
-
-      function getGradeLetter(score) {
-        if (score >= 90) return 'A';
-        if (score >= 80) return 'B';
-        if (score >= 70) return 'C';
-        if (score >= 60) return 'D';
-        return 'F';
-      }
-
-      // Fetch and display grades
-      fetchGrades().then(data => {
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-
-        if (data) {
-          loadingElement.style.display = 'none';
-          const { grades, quizzes } = processGrades(data);
-          displayGrades(grades, quizzes);
-        } else {
-          loadingElement.style.display = 'none';
-          errorElement.textContent = 'Failed to fetch grades. Please try again later.';
-        }
-      });
-    </script>
+    <!-- Local API key: copy js/config.local.example.js → js/config.local.js (gitignored). -->
+    <script src="js/config.local.js"></script>
+    <script src="js/view-grades.js"></script>
   </body>
 </html>
