@@ -53,8 +53,6 @@ CREATE TABLE students (
     email       VARCHAR(150) UNIQUE,
     class_year  ENUM('Freshman', 'Sophomore', 'Junior', 'Senior'),
     major       VARCHAR(100),
-    is_major    BOOLEAN DEFAULT FALSE,       -- TRUE if this is their major dept
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Which students are in which course section
@@ -73,19 +71,15 @@ CREATE TABLE assignments (
     section_id   		INT NOT NULL,
     name                VARCHAR(150) NOT NULL,   -- e.g. "Test 1", "HW 3"
     type                ENUM('Test', 'Homework', 'Project', 'Quiz', 'Other') NOT NULL,
-    max_points          INT NOT NULL DEFAULT 100,
-    due_date            DATE,
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
 -- Grades: one row per student per assignment
 CREATE TABLE grades (
-    id              INT AUTO_INCREMENT PRIMARY KEY,
     student_id      INT NOT NULL,
     assignment_id   INT NOT NULL,
     grade_percent   DECIMAL(5,2) CHECK (grade_percent BETWEEN 0 AND 100),
-    submitted_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_grade (student_id, assignment_id),    -- one grade per student per assignment
+    PRIMARY KEY (student_id, assignment_id),    -- one grade per student per assignment
     FOREIGN KEY (student_id)    REFERENCES students(id),
     FOREIGN KEY (assignment_id) REFERENCES assignments(id)
 );
