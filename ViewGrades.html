@@ -171,19 +171,41 @@
         width: 100%;
       }
 
-      #configHint {
+      .sheet-note {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 8px;
+      }
+
+      #filterBar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-end;
+        margin-top: 16px;
+        margin-bottom: 8px;
+      }
+
+      .filter-field label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #444;
+      }
+
+      .filter-field select {
+        min-width: 140px;
+        max-width: 220px;
+      }
+
+      #dataHint {
         background: #e8eaf6;
         border-left: 4px solid #3f51b5;
         padding: 12px 16px;
         margin-top: 12px;
         border-radius: 4px;
         font-size: 0.95rem;
-      }
-
-      .sheet-note {
-        font-size: 0.85rem;
-        color: #555;
-        margin-top: 8px;
       }
     </style>
   </head>
@@ -207,16 +229,16 @@
     <section id="grades-section" class="w3-container">
       <h2>Grade heatmap</h2>
       <p class="sheet-note">
-        Rows are student IDs, and columns are quiz names. Each cell represents one students grade on the corresponding assignment. If a student is yet to take a quiz, their cell will be gray.
+        Data comes from <code>data/grades_snapshot.json</code>. Rows show student names (hover a row for ID and course). Columns are assignment names. Gray cells mean no grade.
       </p>
-      <div id="loading">Loading spreadsheet data…</div>
+      <div id="filterBar"></div>
+      <div id="loading">Loading grade data…</div>
       <div id="error"></div>
-      <div id="configHint" hidden></div>
+      <div id="dataHint" hidden></div>
       <div id="heatmapWrap"></div>
     </section>
 
-    <!-- Local API key: copy js/config.local.example.js → js/config.local.js (gitignored). -->
-    <script src="js/config.local.js"></script>
+    <!-- Optional: set window.__VIEW_GRADES_CONFIG__ = { gradesJsonUrl: '...' } before this script. -->
     <script src="js/view-grades.js"></script>
   </body>
 </html>

@@ -1,0 +1,8 @@
+Timestamp,Email Address,Score,First Name,Last Name,Student ID,Semester,Year,Course,Section,ABC,123
+5/7/2026 19:58,kwbuansi@davidson.edu,50 / 100,Kwasi,Buansi,1,Spring,2026,CSC 353,A,Correct Answer,Incorrect Answer
+5/7/2026 19:59,a@davidson.edu,100 / 100,John,Doe,2,Spring,2026,CSC 353,A,Correct Answer,Correct Answer
+5/7/2026 20:00,b@davidson.edu,50 / 100,Ethan,Barnett,3,Fall,2026,CSC 353,A,Correct Answer,Incorrect Answer
+5/7/2026 20:01,c@davidson.edu,0 / 100,Jane,Doe,4,Fall,2026,CSC 353,A,Incorrect Answer,Incorrect Answer
+5/7/2026 20:01,d@davidson.edu,100 / 100,Mary,Sue,5,Spring,2026,CSC 353,B,Correct Answer,Correct Answer
+5/7/2026 20:02,e@davidson.edu,100 / 100,Gary,Stu,5,Spring,2026,CSC 353,B,Correct Answer,Correct Answer
+5/7/2026 19:58,kwbuansi@davidson.edu,50 / 100,Kwasi,Buansi,1,Spring,2027,CSC 353,A,Correct Answer,

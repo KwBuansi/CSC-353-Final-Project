@@ -146,20 +146,10 @@
     <section id="qr-code-section" class="w3-container">
       <h2>Submit Share Link to Google Form</h2>
       <div class="form-group">
-        <input type="text" id="qrTitleInput" placeholder="Enter a title for this QR code" />
-      </div>
-      <div class="form-group">
-        <input type="text" id="semesterYear" placeholder="Enter the semester and school year of the quiz (e.g. Spring 2026)" />
+        <input type="text" id="qrTitleInput" placeholder="Enter a title for this QR code (e.g. Quiz 3 — Polynomials)" />
       </div>
       <div class="form-group">
         <textarea id="formUrlInput" placeholder="Paste your Google Form share link here"></textarea>
-      </div>
-      <div class="form-group">
-        <input
-          type="text"
-          id="sheetUrlInput"
-          placeholder="Paste the linked Google Sheet URL (Form → Responses → Link to Sheets → View in Sheets)"
-        />
       </div>
       <button class="w3-button w3-indigo w3-large" onclick="generateQRCode()">Create a new QR Code</button>
       <div id="qrCodeContainer"></div>
@@ -170,33 +160,38 @@
       <h2>How to Use</h2>
       <ol>
         <li>
-          Create a Google Form and paste the share link in the above box. <b>Make sure to ask students to input their student IDs in the form.</b>
+          Create a Google Form quiz. Turn on <strong>Collect email addresses</strong> (so responses include
+          <code>Email Address</code> in the CSV). Use <strong>Make this a quiz</strong> so scores are recorded.
         </li>
         <li>
-          Enter a title for the QR code (e.g., "Quiz 1").
+          Add <strong>required</strong> questions whose titles match <strong>exactly</strong> (case-sensitive):
+          <code>First Name</code>, <code>Last Name</code>, <code>Student ID</code>, <code>Semester</code>,
+          <code>Year</code>, <code>Course</code>, <code>Section</code>. For <code>Section</code>, students enter only
+          <code>A</code> or <code>B</code> (use <code>A</code> if the course has a single section).
         </li>
         <li>
-          Click "Create a new QR Code" to generate a code for the class.
+          Enter a display title for this quiz and paste the form share link, then click <strong>Create a new QR Code</strong>.
         </li>
         <li>
-          In the form's "Responses" section, click "Link to Sheets." Share the spreadsheet: <strong>Share</strong> → General access <strong>Anyone with the link</strong> as <strong>Viewer</strong>.
+          Save each quiz’s responses as a <code>.csv</code> under <code>data/</code> (you can have several). Name each score column in the sheet after that quiz, or name the CSV file after the quiz if the score column is only called something like “Total points”. Set your MySQL password at the top of <code>DataImporter.py</code>, then run <code>DataImporter.py</code> once to update MySQL and <code>data/grades_snapshot.json</code> for the heatmap.
         </li>
       </ol>
     </section>
 
     <script>
-      function extractSpreadsheetId(sheetUrl) {
-        if (!sheetUrl) return null;
-        const m = String(sheetUrl).match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-        return m ? m[1] : null;
+      const STORAGE_KEY_QR_CODES = 'qrCodes';
+
+      function readStoredQRCodes() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY_QR_CODES)) || [];
+        } catch {
+          return [];
+        }
       }
 
       function generateQRCode() {
         const formUrl = document.getElementById('formUrlInput').value.trim();
         const qrTitle = document.getElementById('qrTitleInput').value.trim();
-        const semesterYear = document.getElementById('semesterYear').value.trim();
-        const sheetUrl = document.getElementById('sheetUrlInput').value.trim();
-        const spreadsheetId = extractSpreadsheetId(sheetUrl);
         const qrCodeContainer = document.getElementById('qrCodeContainer');
 
         // Clear previous QR code
@@ -213,23 +208,6 @@
           return;
         }
 
-        if (!semesterYear) {
-          qrCodeContainer.innerHTML = '<p style="color: red;">Please input the semester and year.</p>';
-          return;
-        }
-
-        if (!sheetUrl) {
-          qrCodeContainer.innerHTML =
-            '<p style="color: red;">Please paste the linked Google Sheet URL (from Form responses) so grade distribution can be shown.</p>';
-          return;
-        }
-
-        if (!spreadsheetId) {
-          qrCodeContainer.innerHTML =
-            '<p style="color: red;">Could not read a spreadsheet ID from that URL. Use a link like https://docs.google.com/spreadsheets/d/…/edit</p>';
-          return;
-        }
-
         // Generate the QR code URL
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(formUrl)}`;
 
@@ -238,20 +216,16 @@
         qrCodeImg.src = qrCodeUrl;
         qrCodeImg.alt = 'QR Code for Google Form';
 
-        // Retrieve existing QR codes from localStorage
-        const storedQRCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+        const storedQRCodes = readStoredQRCodes();
 
         // Add the new QR code to the array
         storedQRCodes.push({
           title: qrTitle,
-          semesterYear: semesterYear,
           url: formUrl,
           qrCodeUrl: qrCodeUrl,
-          spreadsheetId: spreadsheetId,
         });
 
-        // Save the updated array back to localStorage
-        localStorage.setItem('qrCodes', JSON.stringify(storedQRCodes));
+        localStorage.setItem(STORAGE_KEY_QR_CODES, JSON.stringify(storedQRCodes));
 
         // Display success message
         qrCodeContainer.innerHTML = `

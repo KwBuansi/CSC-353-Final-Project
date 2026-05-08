@@ -1,10 +1,8 @@
 /**
- * Copy this file to config.local.js (same folder) and paste your real key.
- * config.local.js is gitignored — do not commit it.
+ * Optional overrides for View Grades (no API keys required for the CSV workflow).
  *
- * Key type: Google Cloud “API key” (starts with AIza…), not a service-account JSON key.
- * Enable “Google Sheets API” for your project and restrict the key by HTTP referrer when possible.
+ * Copy to `config.local.js` if you want to change the JSON path. Keep `config.local.js` gitignored.
  */
 window.__VIEW_GRADES_CONFIG__ = {
-  sheetsApiKey: 'YOUR_BROWSER_API_KEY_HERE',
+  // gradesJsonUrl: 'data/grades_snapshot.json',
 };
