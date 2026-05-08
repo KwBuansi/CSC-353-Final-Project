@@ -119,6 +119,10 @@
         text-decoration: underline;
       }
 
+      .qr-item-actions {
+        margin-top: 12px;
+      }
+
       a {
         display: inline-block;
         margin-top: 20px;
@@ -154,35 +158,88 @@
     </section>
 
     <script>
-      // Retrieve stored QR codes from localStorage
-      const storedQRCodes = JSON.parse(localStorage.getItem('qrCodes')) || [];
+      const STORAGE_KEY_QR_CODES = 'qrCodes';
 
-      // Display QR codes
-      const qrCodesList = document.getElementById('qrCodesList');
-      qrCodesList.innerHTML = '';
+      function readStoredQRCodes() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY_QR_CODES)) || [];
+        } catch {
+          return [];
+        }
+      }
 
-      if (storedQRCodes.length === 0) {
-        qrCodesList.innerHTML = '<p>No QR codes generated yet. <a href="index.html">Create one now!</a></p>';
-      } else {
+      function saveStoredQRCodes(arr) {
+        localStorage.setItem(STORAGE_KEY_QR_CODES, JSON.stringify(arr));
+      }
+
+      function deleteQrCodeAt(index) {
+        const arr = readStoredQRCodes();
+        if (index < 0 || index >= arr.length) return;
+        const title = arr[index].title || 'this QR code';
+        if (!confirm(`Delete "${title}"?`)) return;
+        arr.splice(index, 1);
+        saveStoredQRCodes(arr);
+        renderQrCodes();
+      }
+
+      function renderQrCodes() {
+        const qrCodesList = document.getElementById('qrCodesList');
+        const storedQRCodes = readStoredQRCodes();
+
+        qrCodesList.innerHTML = '';
+
+        if (storedQRCodes.length === 0) {
+          qrCodesList.innerHTML = '<p>No QR codes generated yet. <a href="index.html">Create one now!</a></p>';
+          return;
+        }
+
         storedQRCodes.forEach((qrCode, index) => {
           const qrItem = document.createElement('div');
           qrItem.className = 'qr-item';
-          const sheetLine =
-            qrCode.spreadsheetId != null
-              ? `<p>Responses sheet: <a href="https://docs.google.com/spreadsheets/d/${encodeURIComponent(
-                  qrCode.spreadsheetId
-                )}/edit" target="_blank" rel="noopener">Open in Google Sheets</a></p>`
-              : '';
-          qrItem.innerHTML = `
-            <h3>${qrCode.title}</h3>
-            <h3>${qrCode.semesterYear}</h3>
-            <p>Google Form URL: <a href="${qrCode.url}" target="_blank">${qrCode.url}</a></p>
-            ${sheetLine}
-            <img src="${qrCode.qrCodeUrl}" alt="QR Code for ${qrCode.title}" />
-          `;
+
+          const titleEl = document.createElement('h3');
+          titleEl.textContent = qrCode.title || '(Untitled)';
+
+          const linkP = document.createElement('p');
+          const linkA = document.createElement('a');
+          linkA.href = qrCode.url || '#';
+          linkA.target = '_blank';
+          linkA.rel = 'noopener';
+          linkA.textContent = qrCode.url || '';
+          linkP.appendChild(document.createTextNode('Google Form URL: '));
+          linkP.appendChild(linkA);
+
+          const actions = document.createElement('div');
+          actions.className = 'qr-item-actions';
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'w3-button w3-red w3-small';
+          delBtn.textContent = 'Delete this QR code';
+          delBtn.addEventListener('click', () => deleteQrCodeAt(index));
+          actions.appendChild(delBtn);
+
+          qrItem.appendChild(titleEl);
+          qrItem.appendChild(linkP);
+
+          if (qrCode.qrCodeUrl) {
+            const img = document.createElement('img');
+            img.src = qrCode.qrCodeUrl;
+            img.alt = 'QR Code for ' + (qrCode.title || 'form');
+            qrItem.appendChild(img);
+          } else {
+            const em = document.createElement('p');
+            const i = document.createElement('em');
+            i.textContent = 'QR image missing (saved with an older format). Create this QR again from the home page.';
+            em.appendChild(i);
+            qrItem.appendChild(em);
+          }
+
+          qrItem.appendChild(actions);
           qrCodesList.appendChild(qrItem);
         });
       }
+
+      renderQrCodes();
     </script>
   </body>
 </html>

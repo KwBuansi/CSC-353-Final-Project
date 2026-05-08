@@ -1,3 +1,7 @@
+# Python
+__pycache__/
+*.py[cod]
+
 # Local secrets — never commit
 js/config.local.js
 js/.env
@@ -7,3 +11,6 @@ js/.env
 
 # Google Cloud service account keys (push blocked by GitHub if tracked)
 api/*.json
+
+# Generated for the static heatmap (re-create with: python DataImporter.py)
+data/grades_snapshot.json
