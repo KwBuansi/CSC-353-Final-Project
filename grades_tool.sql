@@ -4,8 +4,7 @@ USE FinalProject;
 -- -------------------------------
 -- Drop views
 -- -------------------------------
-DROP VIEW IF EXISTS assignment_averages;
-DROP VIEW IF EXISTS grade_detail;
+
 DROP VIEW IF EXISTS grade_rows;
 
 -- -------------------------------
