@@ -134,7 +134,6 @@
       <div class="tech-bg"></div>
       <div class="w3-display-middle w3-center overlay-content">
         <h1 class="w3-xxxlarge"><b>CSC 353 Final</b></h1>
-        <!-- <span class="w3-large">Subtitle</span> -->
         <nav class="w3-margin-top">
           <a href="ViewGrades.html" class="w3-button w3-indigo w3-large">View Grades</a>
           <a href="ViewCodes.html" class="w3-button w3-indigo w3-large">View QR Codes</a>
@@ -178,17 +177,8 @@
       </ol>
     </section>
 
+    <script src="js/qr-storage.js"></script>
     <script>
-      const STORAGE_KEY_QR_CODES = 'qrCodes';
-
-      function readStoredQRCodes() {
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEY_QR_CODES)) || [];
-        } catch {
-          return [];
-        }
-      }
-
       function generateQRCode() {
         const formUrl = document.getElementById('formUrlInput').value.trim();
         const qrTitle = document.getElementById('qrTitleInput').value.trim();
@@ -216,7 +206,7 @@
         qrCodeImg.src = qrCodeUrl;
         qrCodeImg.alt = 'QR Code for Google Form';
 
-        const storedQRCodes = readStoredQRCodes();
+        const storedQRCodes = QrCodesStorage.read();
 
         // Add the new QR code to the array
         storedQRCodes.push({
@@ -225,7 +215,7 @@
           qrCodeUrl: qrCodeUrl,
         });
 
-        localStorage.setItem(STORAGE_KEY_QR_CODES, JSON.stringify(storedQRCodes));
+        QrCodesStorage.save(storedQRCodes);
 
         // Display success message
         qrCodeContainer.innerHTML = `

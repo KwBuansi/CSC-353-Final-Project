@@ -25,7 +25,7 @@
    python DataImporter.py
    ```
 
-   This reads **every `data/*.csv`**, writes **`data/grades_snapshot.json`** for the site, and **replaces** all rows in **`FinalExam.grade_rows`**.
+   This reads **every `data/*.csv`**, writes **`data/grades_snapshot.json`** for the site, and **reloads** the normalized MySQL tables (the flat **`grade_rows`** view in `grades_tool.sql` reflects that data).
 
 6. **View heatmap** — Use a local web server so the browser can load the JSON:
 

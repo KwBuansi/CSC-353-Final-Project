@@ -157,34 +157,21 @@
       <div id="qrCodesList"></div>
     </section>
 
+    <script src="js/qr-storage.js"></script>
     <script>
-      const STORAGE_KEY_QR_CODES = 'qrCodes';
-
-      function readStoredQRCodes() {
-        try {
-          return JSON.parse(localStorage.getItem(STORAGE_KEY_QR_CODES)) || [];
-        } catch {
-          return [];
-        }
-      }
-
-      function saveStoredQRCodes(arr) {
-        localStorage.setItem(STORAGE_KEY_QR_CODES, JSON.stringify(arr));
-      }
-
       function deleteQrCodeAt(index) {
-        const arr = readStoredQRCodes();
+        const arr = QrCodesStorage.read();
         if (index < 0 || index >= arr.length) return;
         const title = arr[index].title || 'this QR code';
         if (!confirm(`Delete "${title}"?`)) return;
         arr.splice(index, 1);
-        saveStoredQRCodes(arr);
+        QrCodesStorage.save(arr);
         renderQrCodes();
       }
 
       function renderQrCodes() {
         const qrCodesList = document.getElementById('qrCodesList');
-        const storedQRCodes = readStoredQRCodes();
+        const storedQRCodes = QrCodesStorage.read();
 
         qrCodesList.innerHTML = '';
 
