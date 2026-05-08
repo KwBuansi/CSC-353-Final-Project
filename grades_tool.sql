@@ -18,17 +18,8 @@ DROP TABLE IF EXISTS sections;
 DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS courses;
 DROP TABLE IF EXISTS semesters;
-DROP TABLE IF EXISTS users;
 
--- -------------------------------
--- Users
--- -------------------------------
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+
 
 -- -------------------------------
 -- Semesters
@@ -106,42 +97,7 @@ CREATE TABLE grades (
     FOREIGN KEY (assignment_id) REFERENCES assignments(id)
 );
 
--- -------------------------------
--- View: grade_detail
--- -------------------------------
-CREATE VIEW grade_detail AS
-SELECT
-    g.grade_percent,
-    s.id AS student_id,
-    CONCAT(s.first_name, ' ', s.last_name) AS student_name,
-    a.id AS assignment_id,
-    a.name AS assignment_name,
-    c.id AS course_id,
-    c.code AS course_code,
-    c.name AS course_name,
-    sem.season,
-    sem.year
-FROM grades g
-JOIN students s       ON g.student_id = s.id
-JOIN assignments a    ON g.assignment_id = a.id
-JOIN sections sec     ON a.section_id = sec.id
-JOIN courses c        ON sec.course_id = c.id
-JOIN semesters sem    ON sec.semester_id = sem.id;
 
--- -------------------------------
--- View: assignment_averages
--- -------------------------------
-CREATE VIEW assignment_averages AS
-SELECT
-    course_code,
-    course_name,
-    assignment_name,
-    season,
-    year,
-    ROUND(AVG(grade_percent), 2) AS avg_grade,
-    COUNT(*) AS num_grades
-FROM grade_detail
-GROUP BY course_code, course_name, assignment_name, season, year;
 
 -- -------------------------------
 -- View: grade_rows (flat shape for tools / DataImporter; matches normalized data)
