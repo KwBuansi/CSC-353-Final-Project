@@ -14,3 +14,4 @@ api/*.json
 
 # Generated for the static heatmap (re-create with: python DataImporter.py)
 data/grades_snapshot.json
+grades_snapshot.json
